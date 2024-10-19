@@ -23,4 +23,5 @@ button:hover, input[type="submit"]:hover {
     font-size: 16px;
     padding: 10px;
     border: 1px solid gray;
+    max-width: 30%;
 }
