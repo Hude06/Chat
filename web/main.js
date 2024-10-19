@@ -205,26 +205,31 @@ class UserInfo {
         await createUser(this.userid, this.publickey,"User",supabase2)
     }
     async update() {
-        let userid = await fetchMessage("Messages","SendingTo")
-        let messages = await fetchMessage("Messages","encrypted_message")
+        let userid = await fetchMessage("Messages", "SendingTo");
+        let messages = await fetchMessage("Messages", "encrypted_message");
+    
         for (let i = 0; i < userid.length; i++) {
             if (userid[i].SendingTo === user.userid) {
                 let decryptedMessage = await decryptData(arrayBufferToBase64(user.privatekey), base64ToArrayBuffer(messages[i].encrypted_message));
-                console.log(decryptedMessage)
-                current_messages.push(decryptedMessage)
-                for (let i = 0; i < current_messages.length; i++) {
-                    if (current_messages[i] === decryptedMessage) {
-                        return
-                    } else {
-                        let message = document.createElement("div")
-                        message.innerHTML = decryptedMessage
-                        document.getElementById("messages").appendChild(message)
-                    }
+                console.log("Current Messages", decryptedMessage);
+                
+                // Check if the decrypted message already exists
+                if (current_messages.includes(decryptedMessage)) {
+                    console.log("No new messages");
+                } else {
+                    console.log("New Message");
+                    let message = document.createElement("div");
+                    message.innerHTML = decryptedMessage;
+                    document.getElementById("messages").appendChild(message);
+                    current_messages.push(decryptedMessage);
                 }
             }
         }
+    
         setTimeout(() => this.update(), 2000);
+        console.log("Updated");
     }
+    
 }
 let current_messages = []
 let user = new UserInfo();
