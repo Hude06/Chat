@@ -1,4 +1,5 @@
 const { createClient } = supabase;
+const { Preferences } = Capacitor.Plugins;
 console.log("Hello")
 export let supabase2 = createClient('https://dvlfunioxoupyyaxipnj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bGZ1bmlveG91cHl5YXhpcG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjczODE2MzIsImV4cCI6MjA0Mjk1NzYzMn0.Tyqzm6kKzVZqnBDYN69Pb3fcwkSRcA4zUb6QSO0I6gY'); // Replace with your actual anon key
 async function createMessage(msg,userSendingTo,public_key) {
@@ -197,6 +198,7 @@ class UserInfo {
         this.userid = generateRandomString(10)
         this.publickey = null
         this.privatekey = null
+        this.current_messages = []
     }
     init = async function() {
         this.keys = await generateAndExportKeyPair();
@@ -214,14 +216,15 @@ class UserInfo {
                 console.log("Current Messages", decryptedMessage);
                 
                 // Check if the decrypted message already exists
-                if (current_messages.includes(decryptedMessage)) {
+                if (user.current_messages.includes(decryptedMessage)) {
                     console.log("No new messages");
                 } else {
                     console.log("New Message");
                     let message = document.createElement("div");
                     message.innerHTML = decryptedMessage;
                     document.getElementById("messages").appendChild(message);
-                    current_messages.push(decryptedMessage);
+                    user.current_messages.push(decryptedMessage);
+                    Preferences.set({ key: "user", value: JSON.stringify(user) });
                 }
             }
         }
@@ -231,9 +234,28 @@ class UserInfo {
     }
     
 }
-let current_messages = []
-let user = new UserInfo();
-await user.init();
+let user = null
+if (await Preferences.get({ key: "user" }) !== null) {
+    let temp = JSON.parse((await Preferences.get({ key: "user" })).value);
+    console.log(temp.keys)
+    user = new UserInfo();
+    user.userid = temp.userid;
+    user.publickey = base64ToArrayBuffer(temp.publickey);
+    user.privatekey = base64ToArrayBuffer(temp.privatekey);
+    user.current_messages = temp.current_messages;
+    console.log("New user is ",user)
+    
+} else {
+    user = new UserInfo();
+    await user.init();
+    console.log("New USER")
+    let tempPublic = arrayBufferToBase64(user.publickey)
+    let tempPrivate = arrayBufferToBase64(user.privatekey)
+    let user2 = user
+    user2.publickey = tempPublic
+    user2.privatekey = tempPrivate
+    await Preferences.set({ key: "user", value: JSON.stringify(user2) });
+}
 await user.update();
 console.log(user)
 document.getElementById("usernameIS").innerHTML = user.userid
