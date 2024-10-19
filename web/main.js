@@ -211,7 +211,7 @@ class UserInfo {
             if (userid[i].SendingTo === user.userid) {
                 let decryptedMessage = await decryptData(arrayBufferToBase64(user.privatekey), base64ToArrayBuffer(messages[i].encrypted_message));
                 console.log(decryptedMessage)
-                let message = new Element("div")
+                let message = document.createElement("div")
                 message.innerHTML = decryptedMessage
                 document.getElementById("messages").appendChild(message)
             }
