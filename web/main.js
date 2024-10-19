@@ -1,4 +1,3 @@
-const { Preferences } = window.Capacitor.Plugins;
 const { createClient } = supabase;
 console.log("Hello")
 export let supabase2 = createClient('https://dvlfunioxoupyyaxipnj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bGZ1bmlveG91cHl5YXhpcG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjczODE2MzIsImV4cCI6MjA0Mjk1NzYzMn0.Tyqzm6kKzVZqnBDYN69Pb3fcwkSRcA4zUb6QSO0I6gY'); // Replace with your actual anon key
@@ -29,6 +28,7 @@ class GlobalDIV {
             console.log("Clicked",this.message_input.value)
             let message = this.message_input.value
             let user2_ID = prompt("Enter the user ID you want to send the message to")
+            document.getElementById("messageInput").value = ""
             await createMessage(message,user2_ID,user.publickey)
            
         })
@@ -211,14 +211,22 @@ class UserInfo {
             if (userid[i].SendingTo === user.userid) {
                 let decryptedMessage = await decryptData(arrayBufferToBase64(user.privatekey), base64ToArrayBuffer(messages[i].encrypted_message));
                 console.log(decryptedMessage)
-                let message = document.createElement("div")
-                message.innerHTML = decryptedMessage
-                document.getElementById("messages").appendChild(message)
+                current_messages.push(decryptedMessage)
+                for (let i = 0; i < current_messages.length; i++) {
+                    if (current_messages[i] === decryptedMessage) {
+                        return
+                    } else {
+                        let message = document.createElement("div")
+                        message.innerHTML = decryptedMessage
+                        document.getElementById("messages").appendChild(message)
+                    }
+                }
             }
         }
         setTimeout(() => this.update(), 2000);
     }
 }
+let current_messages = []
 let user = new UserInfo();
 await user.init();
 await user.update();
