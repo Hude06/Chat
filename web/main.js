@@ -216,9 +216,7 @@ class UserInfo {
                 document.getElementById("messages").appendChild(message)
             }
         }
-        setInterval(async () => {
-            await this.update();
-        }, 10000); // Adjust the interval as needed
+        setTimeout(() => this.update(), 10000);
     }
 }
 let user = new UserInfo();
