@@ -1,6 +1,9 @@
 const { createClient } = supabase;
 const { Preferences } = Capacitor.Plugins;
 console.log("Hello")
+if (supabase === undefined) {
+    alert("No Internet")
+}
 export let supabase2 = createClient('https://dvlfunioxoupyyaxipnj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bGZ1bmlveG91cHl5YXhpcG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjczODE2MzIsImV4cCI6MjA0Mjk1NzYzMn0.Tyqzm6kKzVZqnBDYN69Pb3fcwkSRcA4zUb6QSO0I6gY'); // Replace with your actual anon key
 async function createMessage(msg,userSendingTo,public_key) {
         let userID = parseMessageUserID(await fetchMessage("Users","User_id"))
@@ -191,7 +194,14 @@ export async function createUser(UserId, publicKey, email,supabase) {
 }
 let globals = new GlobalDIV()
 globals.eventListeners()
-
+function createMessageDiv(msg,user) {
+    let message = document.createElement("div");
+    message.innerHTML = msg;
+    // let user = document.createElement("p")
+    // user.innerHTML = user
+    // message.appendChild(user)
+    document.getElementById("messages").appendChild(message);
+}
 class UserInfo {
     constructor(keys) {
         this.keys = keys
@@ -214,17 +224,20 @@ class UserInfo {
             if (userid[i].SendingTo === user.userid) {
                 let decryptedMessage = await decryptData(arrayBufferToBase64(user.privatekey), base64ToArrayBuffer(messages[i].encrypted_message));
                 console.log("Current Messages", decryptedMessage);
-                
                 // Check if the decrypted message already exists
-                if (user.current_messages.includes(decryptedMessage)) {
+                if (this.current_messages.includes(decryptedMessage)) {
                     console.log("No new messages");
                 } else {
                     console.log("New Message");
-                    let message = document.createElement("div");
-                    message.innerHTML = decryptedMessage;
-                    document.getElementById("messages").appendChild(message);
-                    user.current_messages.push(decryptedMessage);
-                    Preferences.set({ key: "user", value: JSON.stringify(user) });
+                    createMessageDiv(decryptedMessage)
+                    this.current_messages.push(decryptedMessage);
+                    this.publickey = arrayBufferToBase64(this.publickey)
+                    this.privatekey = arrayBufferToBase64(this.privatekey)
+                    if (this.publickey && this.privatekey) {
+                        Preferences.set({ key: "user", value: JSON.stringify(user) });
+                    }
+                    this.publickey = base64ToArrayBuffer(this.publickey)
+                    this.privatekey = base64ToArrayBuffer(this.privatekey)
                 }
             }
         }
@@ -235,7 +248,9 @@ class UserInfo {
     
 }
 let user = null
-if (await Preferences.get({ key: "user" }) !== null) {
+// await Preferences.clear();
+console.log((await Preferences.get({ key: "user" })).value)
+if ((await Preferences.get({ key: "user" })).value !== undefined && ((await Preferences.get({ key: "user" })).value !== null)) {
     let temp = JSON.parse((await Preferences.get({ key: "user" })).value);
     console.log(temp.keys)
     user = new UserInfo();
@@ -252,11 +267,32 @@ if (await Preferences.get({ key: "user" }) !== null) {
     let tempPublic = arrayBufferToBase64(user.publickey)
     let tempPrivate = arrayBufferToBase64(user.privatekey)
     let user2 = user
+    console.log("Saving ",tempPrivate,tempPublic)
     user2.publickey = tempPublic
     user2.privatekey = tempPrivate
+    console.log("This is ",user2)
+    console.log()
     await Preferences.set({ key: "user", value: JSON.stringify(user2) });
+
+    user2.publickey = base64ToArrayBuffer(user2.publickey)
+    user2.privatekey = base64ToArrayBuffer(user2.privatekey)
+
+
+    console.log("Usre1 is ",user)
+
 }
 await user.update();
 console.log(user)
 document.getElementById("usernameIS").innerHTML = user.userid
 
+
+
+async function init() {
+    if ((await Preferences.get({ key: "user" })).value !== undefined && ((await Preferences.get({ key: "user" })).value !== null)) {
+        let temp = JSON.parse((await Preferences.get({ key: "user" })).value);
+            for (let i = 0; i < temp.current_messages.length; i++) {
+                createMessageDiv(temp.current_messages[i])
+            }
+        }
+}
+init();
