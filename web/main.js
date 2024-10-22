@@ -195,12 +195,12 @@ export async function createUser(UserId, publicKey, email,supabase) {
 let globals = new GlobalDIV()
 globals.eventListeners()
 function createMessageDiv(msg,user) {
-    let message = document.createElement("div");
+    let messageDIV = document.createElement("div");
+    let message = document.createElement("p");
     message.innerHTML = msg;
-    // let user = document.createElement("p")
-    // user.innerHTML = user
-    // message.appendChild(user)
-    document.getElementById("messages").appendChild(message);
+    message.className = "card"
+    messageDIV.appendChild(message);
+    document.getElementById("messages").appendChild(messageDIV);
 }
 class UserInfo {
     constructor(keys) {

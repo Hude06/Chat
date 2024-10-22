@@ -9,18 +9,26 @@
     <script src="./cap_core.js"></script>
     <script src="./cap_prefrences.js"></script>
     <script type="module" src="./profile.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 </head>
 <body>
-    <header>
-        <h1>Chat</h1>
-        <h1>User ID</h1>
-    </header>
-    <main>
+    <div class = "users">
+        <h1>Contacts</h1>
+        <div class = "card">
+            <p>Username</p>
+            <p>Public Key</p>
+        </div>
+        <div class = "card">
+            <p>Username</p>
+            <p>Public Key</p>
+        </div>
+    </div>
+    <main class = "glass-effect">
         <div class = "buttons">
-            <button onclick="location.href='./profile.html'"class="active">Profile</button>
-            <button onclick="location.href='./index.html'">Chat</button>
-            <button onclick="location.href='./sign_up.html'">Sign Up</button>
-            <button onclick="location.href='#'">Settings</button>
+            <i class="bi bi-chat"onclick="location.href='./chat.html'"></i>
+            <i class="bi bi-person" onclick="location.href='./profile.html'"></i>
+            <i class="bi bi-gear"></i>
         </div>
     </main>
 

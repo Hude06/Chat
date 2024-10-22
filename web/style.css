@@ -1,3 +1,4 @@
+
 body {
     background-color: white;
     overflow: hidden;
@@ -7,20 +8,30 @@ h1 {
     font-weight: 500; /* Thin font */
     color: black;
 }
-button, input[type="submit"] {
-    font-family: 'YourFont', sans-serif; /* Replace 'YourFont' with your chosen font */
-    font-size: 16px;
-    padding: 10px 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.card {
+    border-radius: 15px; /* Increase for smoother corners */
+    background-color: black;
+    width: fit-content;
+    height: auto; /* Allow height to adjust based on content */
+    padding: 10px 15px; /* Add some padding */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Add a shadow for depth */
+    transition: transform 0.5s, background-color 0.5s; /* Transition for both properties */
+    margin: 10px;
 }
 
+.card:hover {
+    transform: translateY(-2px); /* Slight lift on hover */
+    background-color: #333;
+    transition: transform 0.5s, background-color 0.5s; /* Combined transition */
+}
+
+
+.card p {
+    color: white;
+    margin: 0; /* Remove default margins */
+}
 .chat {
-    border: 1px solid red;
+    /* border: 1px solid red; */
     height: 75vh
 }
 .messages {
@@ -28,7 +39,7 @@ button, input[type="submit"] {
     padding: 10px;
     border: 3px solid black;
     max-width: 100%;
-    height: 100%;
+    height: 80%;
     color:black
 }
 button {
@@ -36,16 +47,54 @@ button {
     height: 3rem;
 }
 .buttons {
-    width: 100%;
+    width: 20vmax;
+    height: fit-content;
     margin-bottom: 1vh;
     display: flex;
     flex-direction: row;
-    border: 1px solid black;
     align-items: center;
     justify-content: center;
 }
+.buttons i {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 2.5rem;
+    margin: 0 1rem;
+}
 main {
-    width: 100%;
     position: absolute;
     bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+#messageForm {
+    display: flex;
+    flex-direction: row;
+}
+#messageForm input {
+    width: 100%;
+    height: 1.5rem;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 0 1rem;
+    font-size: 1.5rem;
+}
+#send {
+    font-size: 25px;
+    padding-left: 10px;
+}
+.glass-effect {
+    background: rgba(0, 0, 0, 0.4); /* Semi-transparent black background */
+    border-radius: 10px; /* Rounded corners */
+    backdrop-filter: blur(10px); /* Blur effect behind the element */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Slightly darker shadow for depth */
+    padding: 20px; /* Padding for content spacing */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border for separation */
+    color: #fff; /* Text color */
+    transition: background 0.3s ease; /* Smooth background transition */
+    max-width: fit-content;
+}
+
+.glass-dark-effect:hover {
+    background: rgba(0, 0, 0, 0.6); /* Darker on hover */
 }
