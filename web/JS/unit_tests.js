@@ -26,6 +26,7 @@ function Test64() {
 }
 Test64();
 async function testSending() {
+    console.log("Unit Test Started",true)
     let user1 = new UserInfo();
     let user2 = new UserInfo();
     await user1.init();
