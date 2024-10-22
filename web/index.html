@@ -18,24 +18,19 @@
         <h1 id = "usernameIS" class = "username">Hello, Do I know you?</h1>
         <h1 id = "UsersPubKey"></h1>
     </header>
-    <div class="container">
-        <main>
-            <section class="chat" id = "chat">
-                <form id="messageForm">
-                    <select name="contacts" id="contacts">
-                        <option value="Contacts">Contacts</option>
-                      </select>
-                    <input type="text" id="messageInput" placeholder="Type your message..." required>
-                    
-                    <button id = "send">Send</button>
-                </form>
-                <div class="messages" id = "messages">
-                    <!-- Messages will be displayed here -->
-                </div>
-            </section>
-        </main>
-    </div>
-
+        <section class="chat" id = "chat">
+            <form id="messageForm">
+                <select name="contacts" id="contacts">
+                    <option value="Contacts">Contacts</option>
+                    </select>
+                <input type="text" id="messageInput" placeholder="Type your message..." required>
+                
+                <button id = "send">Send</button>
+            </form>
+            <div class="messages" id = "messages">
+                <!-- Messages will be displayed here -->
+            </div>
+        </section>
     <main>
         <div class = "buttons">
             <button onclick="location.href='./profile.html'"class="active">Profile</button>
