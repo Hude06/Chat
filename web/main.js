@@ -30,14 +30,21 @@ async function createMessage(msg,userSendingTo,public_key) {
 }
 class GlobalDIV {
     constructor() {
-        this.message_input = document.getElementById("messageInput")
         this.send_button = document.getElementById("send")
     }
     eventListeners() {
+        document.getElementById("messageForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            console.log("Clicked",document.getElementById("messageInput").value)
+            let message = document.getElementById("messageInput").value
+            let user2_ID = prompt("Enter the user ID you want to send the message to")
+            document.getElementById("messageInput").value = ""
+            createMessage()
+            await createMessage(message,user2_ID,user.publickey)
+        });        
         this.send_button.addEventListener("click", async (e) => {
             e.preventDefault();
-            console.log("Clicked",this.message_input.value)
-            let message = this.message_input.value
+            let message = document.getElementById("messageInput").value
             let user2_ID = prompt("Enter the user ID you want to send the message to")
             document.getElementById("messageInput").value = ""
             createMessage()
@@ -293,9 +300,6 @@ if ((await Preferences.get({ key: "user" })).value !== undefined && ((await Pref
 await user.update();
 console.log(user)
 document.getElementById("usernameIS").innerHTML = user.userid
-
-
-
 async function init() {
     if ((await Preferences.get({ key: "user" })).value !== undefined && ((await Preferences.get({ key: "user" })).value !== null)) {
         let temp = JSON.parse((await Preferences.get({ key: "user" })).value);

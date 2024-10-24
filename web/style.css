@@ -42,10 +42,11 @@ h1 {
     height: 80%;
     color:black
 }
-button {
-    width: 10rem;
-    height: 3rem;
-}
+/* button {
+    font-size: 2rem;
+    background-color: red;
+} */
+
 .buttons {
     width: 20vmax;
     height: fit-content;
@@ -56,9 +57,9 @@ button {
     justify-content: center;
 }
 .buttons i {
-    padding-left: 10px;
-    padding-right: 10px;
-    font-size: 2.5rem;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    font-size: 1.75rem;
     margin: 0 1rem;
 }
 main {
