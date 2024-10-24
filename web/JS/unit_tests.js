@@ -8,10 +8,13 @@ class UserInfo {
         this.privatekey = null
     }
     init = async function() {
+        console.log("Unit Test Started",true)
         this.keys = await generateAndExportKeyPair();
         this.publickey = this.keys.publicKey
         this.privatekey = this.keys.privateKey
         await createUser(this.userid, this.publickey,"UnitTest1",supabase2)
+        console.log("Unit Test Finished",true)
+
     }
 }
 function Test64() {
@@ -33,13 +36,15 @@ async function testSending() {
     let message = "Hello, world!";
     // SENDING MESSAGE FROM USER 1 TO USER 2
     //Wait for user to fully init
+    
     await user2.init().finally(async () => {
         let userID = parseMessageUserID(await fetchMessage("Users","User_id"))
         let publicKeys = await fetchMessage("Users","Public_Key")
     try {
         for (let i = 0; i < userID.length; i++) {
+            console.log("Got to here2",userID[i],user2.userid)
             if (userID[i] === user2.userid) {
-                console.log("Got to here")
+                console.log("Got to here2")
                 if (publicKeys[i].Public_Key !== (arrayBufferToBase64(user2.publickey))) {
                     console.log(publicKeys[i].Public_Key," Space ",arrayBufferToBase64(user2.publickey))
                     throw new Error("Unit Test FAILED.......");
