@@ -1,57 +1,70 @@
-
 body {
-    background-color: white;
+    background-color: #121212; /* Dark background for sleek, modern look */
     overflow: hidden;
 }
+
 h1 {
     font-family: sans-serif; /* Replace 'YourFont' with your chosen font */
     font-weight: 500; /* Thin font */
-    color: black;
+    color: #FFFFFF;
 }
+
 .card {
     border-radius: 15px; /* Increase for smoother corners */
-    background-color: black;
+    background-color: #1E1E1E; /* Darker card background */
+    color: #E0E0E0; /* Light text color */
     width: fit-content;
     height: auto; /* Allow height to adjust based on content */
     padding: 10px 15px; /* Add some padding */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Add a shadow for depth */
-    transition: transform 0.5s, background-color 0.5s; /* Transition for both properties */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Enhanced shadow for depth */
+    transition: transform 0.3s, background-color 0.3s; /* Transition for both properties */
     margin: 10px;
 }
 
 .card:hover {
     transform: translateY(-2px); /* Slight lift on hover */
-    background-color: #333;
-    transition: transform 0.5s, background-color 0.5s; /* Combined transition */
+    background-color: #2A2A2A; /* Slightly lighter on hover */
+    transition: transform 0.3s, background-color 0.3s; /* Combined transition */
 }
-
 
 .card p {
-    color: white;
+    color: #E0E0E0; /* Light text color */
     margin: 0; /* Remove default margins */
 }
+
 .chat {
-    /* border: 1px solid red; */
-    height: 75vh
+    height: 75vh;
 }
+
 .messages {
     font-size: 16px;
     padding: 10px;
-    border: 3px solid black;
+    border: 3px solid #333; /* Dark border to match theme */
     max-width: 100%;
     height: 80%;
-    color:black;
+    color: #E0E0E0;
+    background-color: #1A1A1A; /* Darker background */
     scroll-behavior: smooth;
-    overflow: scroll;
+    overflow-y: auto;
 }
-/* button {
-    font-size: 2rem;
-    background-color: red;
-} */
+
+/* Custom scrollbar for .messages */
+.messages::-webkit-scrollbar {
+    width: 8px;
+}
+.messages::-webkit-scrollbar-track {
+    background: #1A1A1A;
+}
+.messages::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+}
+
 header {
     display: flex;
     flex-direction: row;
 }
+
 .bi-check-circle-fill {
     color: #E3229E;
     margin-top: 24px;
@@ -60,7 +73,8 @@ header {
 }
 
 .buttons {
-    width: 20vmax;
+    width: fit-content;
+    padding: 10px;
     height: fit-content;
     margin-bottom: 1vh;
     display: flex;
@@ -72,42 +86,58 @@ header {
     padding-left: 1vw;
     padding-right: 1vw;
     font-size: 1.75rem;
+    color: #E0E0E0; /* Subtle icon color */
     margin: 0 1rem;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
+.buttons i:hover {
+    color: #C4D6B0; /* Accent color on hover */
+    transform: scale(1.1);
+}
+
 main {
     position: absolute;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
 }
+
 #messageForm {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 #messageForm input {
+    margin-top: 10px;
     width: 100%;
     height: 1.5rem;
-    border: 1px solid black;
+    border: 1px solid #444;
     border-radius: 10px;
-    padding: 0 1rem;
+    padding: 10px;
     font-size: 1.5rem;
+    background-color: #2A2A2A;
+    color: #E0E0E0;
 }
+
 #send {
     font-size: 25px;
     padding-left: 10px;
+    padding-top: 10px;
+    color: white;
 }
+
 .glass-effect {
-    background: rgba(0, 0, 0, 0.4); /* Semi-transparent black background */
+    background: rgba(255, 255, 255, 0.1); /* Subtle glass effect */
     border-radius: 10px; /* Rounded corners */
-    backdrop-filter: blur(10px); /* Blur effect behind the element */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Slightly darker shadow for depth */
+    backdrop-filter: blur(8px); /* Slight blur for depth */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
     padding: 20px; /* Padding for content spacing */
     border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border for separation */
-    color: #fff; /* Text color */
+    color: #E0E0E0; /* Text color */
     transition: background 0.3s ease; /* Smooth background transition */
     max-width: fit-content;
 }
 
 .glass-dark-effect:hover {
-    background: rgba(0, 0, 0, 0.6); /* Darker on hover */
+    background: rgba(255, 255, 255, 0.15); /* Darker on hover */
 }

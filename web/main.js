@@ -175,8 +175,13 @@ let contacts = []
 class GlobalDIV {
     constructor() {
         this.send_button = document.getElementById("send")
+        this.clearButton = document.getElementById("clear")
     }
     eventListeners() {
+        this.clearButton.addEventListener("click", async function(e) {
+            await messagingService.Preferences.clear();
+            location.reload();
+        })
         document.getElementById("messageForm").addEventListener("submit", async function(e) {
             e.preventDefault();
             let message = document.getElementById("messageInput").value
@@ -284,13 +289,13 @@ class UserInfo {
                 }
             }
         }
-    
+        console.log("Checking")
         setTimeout(() => this.update(), 2000);
     }
     
 }
 let user = null
-// await messagingService.Preferences.clear();
+
 if ((await messagingService.Preferences.get({ key: "user" })).value !== undefined && ((await messagingService.Preferences.get({ key: "user" })).value !== null)) {
     let temp = JSON.parse((await messagingService.Preferences.get({ key: "user" })).value);
     user = new UserInfo();
