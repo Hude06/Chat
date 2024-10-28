@@ -42,11 +42,8 @@ async function testSending() {
         let publicKeys = await fetchMessage("Users","Public_Key")
     try {
         for (let i = 0; i < userID.length; i++) {
-            console.log("Got to here2",userID[i],user2.userid)
             if (userID[i] === user2.userid) {
-                console.log("Got to here2")
                 if (publicKeys[i].Public_Key !== (arrayBufferToBase64(user2.publickey))) {
-                    console.log(publicKeys[i].Public_Key," Space ",arrayBufferToBase64(user2.publickey))
                     throw new Error("Unit Test FAILED.......");
                 } else {
                     console.log("Part 1 Started",true)

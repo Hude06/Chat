@@ -1,26 +1,20 @@
 const { createClient } = supabase;
 
 const { Preferences } = Capacitor.Plugins;
-console.log("Hello")
 if (supabase === undefined) {
     alert("No Internet")
 }
+let contacts = []
 export let supabase2 = createClient('https://dvlfunioxoupyyaxipnj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bGZ1bmlveG91cHl5YXhpcG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjczODE2MzIsImV4cCI6MjA0Mjk1NzYzMn0.Tyqzm6kKzVZqnBDYN69Pb3fcwkSRcA4zUb6QSO0I6gY'); // Replace with your actual anon key
-console.log(supabase2)
 async function createMessage(msg,userSendingTo,public_key) {
         let userID = parseMessageUserID(await fetchMessage("Users","User_id"))
         let publicKeys = await fetchMessage("Users","Public_Key")
     try {
         for (let i = 0; i < userID.length; i++) {
-            console.log("Sending MSG to",msg, userSendingTo, "From", public_key)
-            console.log(userID)
             if (userID[i] === userSendingTo) {
-                console.log("CORRECT ID")
                     let encryptedMessage = await encryptData((publicKeys[i].Public_Key), msg);
-
-                    console.log("Encrypted MESSAGE IS", encryptedMessage)
-                    await submitMessage('Messages',arrayBufferToBase64(encryptedMessage),"USER@test.com",arrayBufferToBase64(public_key),userSendingTo);
-                    console.log("Message Sent, From Submit Message",true)
+                    await submitMessage('Messages',arrayBufferToBase64(encryptedMessage),user.userid,arrayBufferToBase64(public_key),userSendingTo);
+                    console.log("Message Sent",true)
                 }
             }
         } catch {
@@ -33,9 +27,9 @@ class GlobalDIV {
         this.send_button = document.getElementById("send")
     }
     eventListeners() {
+
         document.getElementById("messageForm").addEventListener("submit", async function(e) {
             e.preventDefault();
-            console.log("Clicked",document.getElementById("messageInput").value)
             let message = document.getElementById("messageInput").value
             let user2_ID = prompt("Enter the user ID you want to send the message to")
             document.getElementById("messageInput").value = ""
@@ -48,7 +42,11 @@ class GlobalDIV {
             let user2_ID = prompt("Enter the user ID you want to send the message to")
             document.getElementById("messageInput").value = ""
             createMessage()
-            await createMessage(message,user2_ID,user.publickey)
+            if (user2_ID === null || user2_ID === undefined || user2_ID === "" || user2_ID === "null") {
+                console.log("Not submited")
+            } else {
+                await createMessage(message,user2_ID,user.publickey)
+            }
            
         })
     }
@@ -100,7 +98,6 @@ export function arrayBufferToBase64(buffer) {
     return window.btoa(binary);
 }
 export function base64ToArrayBuffer(base64) {
-    // console.log("Base 64 is ", base64)
     const binaryString = window.atob(base64);
     const len = binaryString.length;
     const bytes = new Uint8Array(len);
@@ -122,7 +119,6 @@ export async function importPublicKey(exportedKey) {
     );
 }
 export async function encryptData(publicKeyBase64, tempData) {
-    // console.log("Encrypting daat is",base64ToArrayBuffer(publicKeyBase64))
     const publicKeyBuffer = base64ToArrayBuffer(publicKeyBase64); // Convert base64 to ArrayBuffer
     const publicKey = await importPublicKey(publicKeyBuffer); // Import the key properly
     const encodedData = new TextEncoder().encode(tempData); // Encode the data
@@ -137,7 +133,6 @@ export async function encryptData(publicKeyBase64, tempData) {
     return encryptedData; // Return the encrypted data
 }
 export async function decryptData(privateKeyBase64, encryptedMessage) {
-    console.log("Working")
     try {
         const privateKeyBuffer = base64ToArrayBuffer(privateKeyBase64);
         const privateKey = await window.crypto.subtle.importKey(
@@ -157,8 +152,7 @@ export async function decryptData(privateKeyBase64, encryptedMessage) {
             privateKey,
             encryptedMessage
         );
-        console.log("Ran")
-        console.log("Decrypted message buffer:", new TextDecoder().decode(decryptedMessage));
+        // console.log("Decrypted message buffer:", new TextDecoder().decode(decryptedMessage));
         return new TextDecoder().decode(decryptedMessage);
 
     } catch (error) {
@@ -166,7 +160,6 @@ export async function decryptData(privateKeyBase64, encryptedMessage) {
     }
 }
 export async function submitMessage(Table, MessageEncrypted,sender_id,Public_Key,sendingto) {
-    console.log("Sending to ", sendingto)
     const { error } = await supabase2
     .from(Table) // Replace with your table name
     .insert({ created_at: Date.now, sender_id: sender_id, SendingTo:sendingto, encrypted_message:MessageEncrypted, public_key:Public_Key  }) // Replace with your column names and values;
@@ -180,7 +173,6 @@ export function parseMessageUserID(data) {
         let newData = data[i]
         if (newData.User_id === null || newData.User_id === undefined || newData.User_id === "" || newData.User_id === "null"){
         } else {
-            // console.log(newData.User_id)
             temp.push(newData.User_id)
         }
     }
@@ -199,23 +191,28 @@ export async function fetchMessage(Table, column) {
     return data
 }
 export async function createUser(UserId, publicKey, email,supabase) {
-    console.log("WE MADE A NEW USER AND SENT TO SUPABASE",supabase,UserId,publicKey)
     const { error2 } = await supabase
     .from("Users") 
     .insert({
       Public_Key: arrayBufferToBase64(publicKey),
       User_id: UserId,
-      email: "USER NOT UNIT TEST@google.com"
+      email: "user"
     });    
 }
 let globals = new GlobalDIV()
 globals.eventListeners()
 function createMessageDiv(msg,user) {
     let messageDIV = document.createElement("div");
-    let message = document.createElement("p");
-    message.innerHTML = msg;
+    let p2 = document.createElement("p"); 
+    if (user !== undefined) {
+        console.log("Adding User")
+        p2.innerHTML = "" + user.sender_id
+        messageDIV.appendChild(p2)
+    }
+    let p = document.createElement("p");
+    p.innerHTML = msg;
     messageDIV.className = "card"
-    messageDIV.appendChild(message);
+    messageDIV.appendChild(p);
     document.getElementById("messages").appendChild(messageDIV);
 }
 class UserInfo {
@@ -224,6 +221,7 @@ class UserInfo {
         this.userid = generateRandomString(10)
         this.publickey = null
         this.privatekey = null
+        this.username = null
         this.current_messages = []
     }
     init = async function() {
@@ -235,19 +233,24 @@ class UserInfo {
     async update() {
         let userid = await fetchMessage("Messages", "SendingTo");
         let messages = await fetchMessage("Messages", "encrypted_message");
-    
+        let sender = await fetchMessage("Messages", "sender_id");
         for (let i = 0; i < userid.length; i++) {
-            // console.log(userid[i].SendingTo, user.userid)
             if (userid[i].SendingTo === user.userid) {
                 let decryptedMessage = await decryptData(arrayBufferToBase64(user.privatekey), base64ToArrayBuffer(messages[i].encrypted_message));
-                console.log("Current Messages", decryptedMessage);
                 // Check if the decrypted message already exists
                 if (this.current_messages.includes(decryptedMessage)) {
                     console.log("No new messages");
                 } else {
-                    console.log("New Message");
-                    createMessageDiv(decryptedMessage)
-                    this.current_messages.push(decryptedMessage);
+                    let temp = new UserInfo()
+ 
+                    localStorage.setItem("contacts", JSON.stringify(contacts));
+                    createMessageDiv(decryptedMessage,sender[i])
+                    let message = {
+                        sender: sender[i].sender_id,
+                        message: decryptedMessage,
+                        timestamp: Date.now()
+                    }
+                    this.current_messages.push(message);
                     this.publickey = arrayBufferToBase64(this.publickey)
                     this.privatekey = arrayBufferToBase64(this.privatekey)
                     if (this.publickey && this.privatekey) {
@@ -260,13 +263,11 @@ class UserInfo {
         }
     
         setTimeout(() => this.update(), 2000);
-        console.log("Updated");
     }
     
 }
 let user = null
 // await Preferences.clear();
-console.log((await Preferences.get({ key: "user" })).value)
 if ((await Preferences.get({ key: "user" })).value !== undefined && ((await Preferences.get({ key: "user" })).value !== null)) {
     let temp = JSON.parse((await Preferences.get({ key: "user" })).value);
     user = new UserInfo();
@@ -279,32 +280,32 @@ if ((await Preferences.get({ key: "user" })).value !== undefined && ((await Pref
 } else {
     user = new UserInfo();
     await user.init();
-    console.log("New USER")
     let tempPublic = arrayBufferToBase64(user.publickey)
     let tempPrivate = arrayBufferToBase64(user.privatekey)
     let user2 = user
-    console.log("Saving ",tempPrivate,tempPublic)
     user2.publickey = tempPublic
     user2.privatekey = tempPrivate
-    console.log("This is ",user2)
-    console.log()
     await Preferences.set({ key: "user", value: JSON.stringify(user2) });
 
     user2.publickey = base64ToArrayBuffer(user2.publickey)
     user2.privatekey = base64ToArrayBuffer(user2.privatekey)
-
-
-    console.log("Usre1 is ",user)
-
 }
 await user.update();
-console.log(user)
-document.getElementById("usernameIS").innerHTML = user.userid
+function loop() {
+    if (document.activeElement === document.getElementById("messageInput")) {
+        document.getElementById("bar").style.display = "none"
+    } else {
+        document.getElementById("bar").style.display = "flex"
+    }
+    requestAnimationFrame(loop)
+}
+document.getElementById("usernameIS").innerHTML = "Friend Code - " + user.userid
 async function init() {
+    loop();
     if ((await Preferences.get({ key: "user" })).value !== undefined && ((await Preferences.get({ key: "user" })).value !== null)) {
         let temp = JSON.parse((await Preferences.get({ key: "user" })).value);
             for (let i = 0; i < temp.current_messages.length; i++) {
-                createMessageDiv(temp.current_messages[i])
+                createMessageDiv(temp.current_messages[i].message,temp.current_messages[i].sender)
             }
         }
 }
