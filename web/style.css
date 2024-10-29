@@ -123,7 +123,15 @@ main {
     font-size: 25px;
     padding-left: 10px;
     padding-top: 10px;
-    color: white;
+    color: #E0E0E0;
+    transition: transform 0.3s, background-color 0.3s; /* Transition for both properties */
+
+}
+
+#send:hover {
+    color: #C4D6B0; /* Accent color on hover */
+    transform: scale(1.1);
+    transition: transform 0.3s, background-color 0.3s; /* Transition for both properties */
 }
 
 .glass-effect {

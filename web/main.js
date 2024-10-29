@@ -47,7 +47,9 @@ class MessagingService {
     try {
         for (let i = 0; i < userID.length; i++) {
             if (userID[i] === userSendingTo) {
-                    let encryptedMessage = await encryptData((publicKeys[i].Public_Key), msg);
+                    console.log(msg,publicKeys[i].Public_Key)
+                    let encryptedMessage = await encryption.encryptData((publicKeys[i].Public_Key), msg);
+                    console.log("Got to here",encryptedMessage)
                     await this.submitMessage('Messages',base64.toBase64(encryptedMessage),user.userid,base64.toBase64(public_key),userSendingTo);
                     console.log("Message Sent",true)
                 }
@@ -58,13 +60,11 @@ class MessagingService {
         }
     }
     createMessageDiv(msg,user) {
+        console.log(user)
         let messageDIV = document.createElement("div");
         let p2 = document.createElement("p"); 
-        if (user !== undefined) {
-            console.log("Adding User")
-            p2.innerHTML = "" + user.sender_id
-            messageDIV.appendChild(p2)
-        }
+        p2.innerHTML = "" + user
+        messageDIV.appendChild(p2)
         let p = document.createElement("p");
         p.innerHTML = msg;
         messageDIV.className = "card"
@@ -127,9 +127,12 @@ class Encryption {
         );
     }
     async encryptData(publicKeyBase64, tempData) {
-        const publicKeyBuffer = base64ToArrayBuffer(publicKeyBase64); // Convert base64 to ArrayBuffer
-        const publicKey = await importPublicKey(publicKeyBuffer); // Import the key properly
+        console.log("Trying to encrypt")
+        const publicKeyBuffer = base64.toArrayBuffer(publicKeyBase64); // Convert base64 to ArrayBuffer
+        console.log("Trying to encrypt2")
+        const publicKey = await this.importPublicKey(publicKeyBuffer); // Import the key properly
         const encodedData = new TextEncoder().encode(tempData); // Encode the data
+        console.log("Got to here 2")
         const encryptedData = await window.crypto.subtle.encrypt(
             {
                 name: "RSA-OAEP",
@@ -256,42 +259,48 @@ class UserInfo {
         let userid = await fetchMessage("Messages", "SendingTo");
         let messages = await fetchMessage("Messages", "encrypted_message");
         let sender = await fetchMessage("Messages", "sender_id");
+        console.log("Ran1");
         for (let i = 0; i < userid.length; i++) {
             if (userid[i].SendingTo === user.userid) {
-                let decryptedMessage = await encryption.decryptData(base64.toBase64(user.privatekey), base64.toArrayBuffer(messages[i].encrypted_message));
+                let decryptedMessage = await encryption.decryptData(
+                    base64.toBase64(user.privatekey),
+                    base64.toArrayBuffer(messages[i].encrypted_message)
+                );
+    
                 // Check if the decrypted message already exists
-                console.log(this.current_messages,decryptedMessage)
-                for (let i = 0; i < this.current_messages.length; i++) {
-                    if (this.current_messages[i].message === decryptedMessage) {
-                        console.log("Message already exists");
-                        return;
-                    }
+                let messageExists = this.current_messages.some(msg => msg.message === decryptedMessage);
+    
+                if (messageExists) {
+                    console.log("Message already exists");
+                    // You can choose to update any necessary state here instead of returning
+                    continue; // Skip to the next iteration
                 }
-
-                if (this.current_messages.includes(decryptedMessage)) {
-                    console.log("No new messages");
-                } else { 
-                    localStorage.setItem("contacts", JSON.stringify(contacts));
-                    messagingService.createMessageDiv(decryptedMessage,sender[i])
-                    let message = {
-                        sender: sender[i].sender_id,
-                        message: decryptedMessage,
-                        timestamp: Date.now()
-                    }
-                    this.current_messages.push(message);
-                    this.publickey = base64.toBase64(this.publickey)
-                    this.privatekey = base64.toBase64(this.privatekey)
-                    if (this.publickey && this.privatekey) {
-                        messagingService.Preferences.set({ key: "user", value: JSON.stringify(user) });
-                    }
-                    this.publickey = base64.toArrayBuffer(this.publickey)
-                    this.privatekey = base64.toArrayBuffer(this.privatekey)
+    
+                // If the message does not exist, proceed to create it
+                messagingService.createMessageDiv(decryptedMessage, sender[i].sender_id);
+                let message = {
+                    sender: sender[i],
+                    message: decryptedMessage,
+                    timestamp: Date.now()
+                };
+    
+                this.current_messages.push(message);
+                this.publickey = base64.toBase64(this.publickey);
+                this.privatekey = base64.toBase64(this.privatekey);
+    
+                if (this.publickey && this.privatekey) {
+                    messagingService.Preferences.set({ key: "user", value: JSON.stringify(user) });
                 }
+    
+                this.publickey = base64.toArrayBuffer(this.publickey);
+                this.privatekey = base64.toArrayBuffer(this.privatekey);
             }
         }
-        console.log("Checking")
+    
+        console.log("Checking");
         setTimeout(() => this.update(), 2000);
     }
+    
     
 }
 let user = null
@@ -318,7 +327,6 @@ if ((await messagingService.Preferences.get({ key: "user" })).value !== undefine
     user2.publickey = base64.toArrayBuffer(user2.publickey)
     user2.privatekey = base64.toArrayBuffer(user2.privatekey)
 }
-await user.update();
 function loop() {
     if (document.activeElement === document.getElementById("messageInput")) {
         document.getElementById("bar").style.display = "none"
@@ -329,11 +337,13 @@ function loop() {
 }
 document.getElementById("usernameIS").innerHTML = "Friend Code - " + user.userid
 async function init() {
+    await user.update();
     loop();
     if ((await messagingService.Preferences.get({ key: "user" })).value !== undefined && ((await messagingService.Preferences.get({ key: "user" })).value !== null)) {
         let temp = JSON.parse((await messagingService.Preferences.get({ key: "user" })).value);
             for (let i = 0; i < temp.current_messages.length; i++) {
-                messagingService.createMessageDiv(temp.current_messages[i].message,temp.current_messages[i].sender)
+                // messagingService.createMessageDiv(temp.current_messages[i].message,temp.current_messages[i].sender) 
+                messagingService.createMessageDiv(temp.current_messages[i].message,temp.current_messages[i].sender.sender_id)
             }
         }
 }
