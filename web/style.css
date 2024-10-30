@@ -107,6 +107,25 @@ main {
     flex-direction: row;
     align-items: center;
 }
+#contact {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+#contact i {
+    align-items: center;
+    font-size: 25px;
+    color: #E0E0E0; /* Subtle icon color */
+    margin: 0 1rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+#contact i:hover {
+    color: #C4D6B0; /* Accent color on hover */
+    transform: scale(1.1);
+}
+#contact p {
+    padding: 10px;
+}
 #messageForm input {
     margin-top: 10px;
     width: 100%;

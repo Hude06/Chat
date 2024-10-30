@@ -7,6 +7,12 @@ try {
     alert ("No Internet Connection")
     throw new Error("No Internet")
 }
+function getQueryParams(pram) {
+    const params = new URLSearchParams(window.location.search);
+    const temp = params.get(pram); // Gets the value of 'name'
+    console.log(temp)
+    return temp;
+}
 
 class Base64 {
     constructor() {
@@ -32,6 +38,16 @@ class Base64 {
 class MessagingService {
     constructor() {
         this.Preferences = Capacitor.Plugins.Preferences;
+        this.PushNotifications = Capacitor.Plugins.PushNotifications;
+    }
+    init() {
+        // this.PushNotifications.requestPermissions().then(result => {
+        //     if (result.receive === 'granted') {
+        //       PushNotifications.register();
+        //     } else {
+        //       console.error('Push notification permission denied');
+        //     }
+        //   });
     }
     async submitMessage(Table, MessageEncrypted,sender_id,Public_Key,sendingto) {
         const { error } = await supabase2
@@ -173,8 +189,11 @@ class Encryption {
 }
 let base64 = new Base64();
 let messagingService = new MessagingService();
+messagingService.init();
 let encryption = new Encryption();
 let contacts = []
+let user2_ID = (getQueryParams("username"));
+console.log(user2_ID)
 class GlobalDIV {
     constructor() {
         this.send_button = document.getElementById("send")
@@ -188,19 +207,26 @@ class GlobalDIV {
         document.getElementById("messageForm").addEventListener("submit", async function(e) {
             e.preventDefault();
             let message = document.getElementById("messageInput").value
-            let user2_ID = prompt("Enter the user ID you want to send the message to")
+            if (user2_ID === null) {
+                console.log("true")
+                user2_ID = prompt("Enter the user ID you want to send the message to")
+            }
             document.getElementById("messageInput").value = ""
             await messagingService.createMessage(message,user2_ID,user.publickey)
+            await messagingService.createMessage(message,user.userid,user.publickey)
         });        
         this.send_button.addEventListener("click", async (e) => {
             e.preventDefault();
             let message = document.getElementById("messageInput").value
-            let user2_ID = prompt("Enter the user ID you want to send the message to")
+            if (user2_ID === null) {
+                user2_ID = prompt("Enter the user ID you want to send the message to")
+            }
             document.getElementById("messageInput").value = ""
             if (user2_ID === null || user2_ID === undefined || user2_ID === "" || user2_ID === "null") {
                 console.log("Not submited")
             } else {
                 await messagingService.createMessage(message,user2_ID,user.publickey)
+                await messagingService.createMessage(message,user.userid,user.publickey)
             }
            
         })
